@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Pro – Auto Login (1 Day Expiry)</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="box">
+    <div class="header-row">
+        <div style="width:30px"></div> 
+        <h2>Quiz Master</h2>
+        <div class="header-actions">
+            <button id="authBtn" class="login-btn" onclick="toggleLoginModal()">👤 Đăng nhập</button>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Đổi màu nền">🌓</button>
+        </div>
+    </div>
+
+    <div id="userStatus" style="text-align:center; font-size:13px; color:var(--text-sub); margin-bottom:15px; font-style:italic;">
+        Chế độ khách: Giới hạn 1 file.
+    </div>
+
+    <div id="start">
+        <div id="dataManager" class="custom-setup">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <h3 style="margin:0; font-size: 16px;">📂 1. Kho câu hỏi</h3>
+                <span id="totalBadge" style="background:var(--primary); color:white; padding:2px 8px; border-radius:10px; font-size:12px; font-weight:bold">0 câu</span>
+            </div>
+            <hr style="margin:10px 0">
+
+            <div id="inputArea">
+                <div class="file-upload-wrapper">
+                    <label for="fileInput" style="cursor:pointer; color:var(--primary); font-weight:500; display:block">
+                        ➕ Chọn file (.txt, .json, .js) để thêm
+                    </label>
+                    <input type="file" id="fileInput" accept=".json,.txt,.js" style="display:none" onchange="handleFileUpload()">
+                    <p style="margin:5px 0 0; font-size:11px; opacity:0.7">Hỗ trợ nạp nhiều lần (nếu đã đăng nhập)</p>
+                </div>
+                <div style="display:flex; gap:5px; margin-top:10px">
+                    <textarea id="jsonInput" placeholder='Hoặc dán text vào đây...'></textarea>
+                </div>
+                <button onclick="loadFromText()" class="btn-success" style="width:100%; margin:0">⬇️ Nạp thêm Text</button>
+            </div>
+            <div id="importHistory" style="margin-top:15px; max-height:200px; overflow-y:auto"></div>
+        </div>
+
+        <div id="gameMode" class="hidden fade-in" style="margin-top:20px;">
+            <h3 style="margin-bottom:10px; font-size: 16px;">🎮 2. Vào thi</h3>
+            <div class="start-grid">
+                <button onclick="startQuiz(5)">🚀 5 câu</button>
+                <button onclick="startQuiz(10)">🔥 10 câu</button>
+                <button onclick="startQuiz(30)">🏆 30 câu</button>
+                <button onclick="startQuiz('all')">📚 Tất cả</button>
+            </div>
+            
+            <div class="custom-setup">
+                <p style="margin-top:0; font-weight:500; font-size:14px">Tùy chỉnh:</p>
+                <div class="input-group-3">
+                    <input type="number" id="customNum" placeholder="Số câu">
+                    <input type="number" id="customTime" placeholder="Phút (vô hạn)">
+                    <input type="number" id="customDelay" placeholder="Độ trễ (ms)**800ms">
+                </div>
+                <button onclick="startCustom()" style="width:100%; margin: 10px 0 0 0;">Bắt đầu</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="statusBar" class="status-bar hidden">
+        <div id="progress" class="progress"></div>
+        <div id="timer" class="timer"></div>
+    </div>
+    
+    <button id="endBtn" onclick="endNow()" style="display:none">⛔ Kết thúc</button>
+    <div style="clear:both"></div>
+
+    <div id="quiz"></div>
+    <div id="result"></div>
+</div>
+
+<div id="loginModal" class="modal-overlay">
+    <div class="modal-box">
+        <button class="modal-close" onclick="toggleLoginModal()">×</button>
+        <h3 style="color:var(--primary)">Đăng nhập</h3>
+        <p style="font-size:12px; color:var(--text-sub)">Tài khoản: admin / Mật khẩu: admin</p>
+        <input type="text" id="username" placeholder="Tên đăng nhập">
+        <input type="password" id="password" placeholder="Mật khẩu">
+        <button onclick="performLogin()" style="width:100%; margin:10px 0;">Đăng nhập ngay</button>
+    </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
