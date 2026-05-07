@@ -510,9 +510,10 @@ function showResult(outOfTime){
     </div>
  </div>
 
- <div style="text-align:center; margin-bottom:20px; display:flex; flex-wrap:wrap; justify-content:center;">
+<div style="text-align:center; margin-bottom:20px; display:flex; flex-wrap:wrap; justify-content:center;">
     <button onclick="continueQuiz()">👉 Tiếp tục thi</button>
     <button onclick="retryCurrentQuiz()" class="btn-retry">${retryText}</button>
+    ${sai > 0 ? `<button onclick="retryWrongQuestions()" class="btn-danger">❌ Làm lại câu sai (${sai})</button>` : ""}
     <button onclick="resetAll()" class="btn-reset">🏠 Về màn hình chính</button>
  </div>
  
@@ -607,4 +608,36 @@ function resetAll(){
  document.getElementById("statusBar").classList.add("hidden");
  document.getElementById("endBtn").style.display="none";
  document.getElementById("start").style.display="block";
+}
+function retryWrongQuestions() {
+    // 1. Kiểm tra giới hạn lượt chơi của khách
+    if (!isLoggedIn) {
+        if (guestPlayCount >= MAX_GUEST_PLAYS) {
+            alert(`⚠️ IP: ${userIP} ĐÃ HẾT LƯỢT!\n\nVui lòng Đăng nhập.`);
+            toggleLoginModal();
+            return;
+        }
+        guestPlayCount++;
+    }
+
+    // 2. Lọc ra danh sách các câu sai hoặc chưa làm (bỏ qua)
+    let wrongQuestions = quizQuestions.filter((q, idx) => answers[idx] !== q.correctIndex);
+
+    if (wrongQuestions.length === 0) {
+        return alert("Tuyệt vời! Bạn không có câu sai nào.");
+    }
+
+    // 3. Ghi đè lại danh sách câu hỏi hiện tại bằng các câu sai
+    quizQuestions = wrongQuestions;
+
+    // 4. Đảo lại vị trí câu hỏi và đáp án để tránh học vẹt
+    shuffle(quizQuestions);
+    quizQuestions.forEach(q => {
+        shuffle(q.options);
+        q.correctIndex = q.options.findIndex(o => o.old === q.originalAnswer);
+    });
+
+    // 5. Reset UI và bắt đầu lại bài thi với các câu sai
+    resetUI();
+    initQuizSession(savedTimeMinutes);
 }
